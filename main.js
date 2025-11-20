@@ -107,6 +107,16 @@ app.put("/inventory/:id", (req, res) => {
     res.json({ message: "Updated" });
 });
 
+app.get("/inventory/:id/photo", (req, res) => {
+    const file = getPhotoPath(req.params.id);
+
+    if (!fs.existsSync(file)) {
+        return res.status(404).send("Photo not found");
+    }
+
+    res.setHeader("Content-Type", "image/jpeg");
+    fs.createReadStream(file).pipe(res);
+});
 
 
 
