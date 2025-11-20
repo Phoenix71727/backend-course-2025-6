@@ -2,6 +2,8 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const { program } = require("commander");
+const express = require("express");
+const multer  = require("multer");
 
 program
   .requiredOption("-h, --host <host>", "Server host")
@@ -15,6 +17,10 @@ if (!fs.existsSync(options.cache)) {
     fs.mkdirSync(options.cache, { recursive: true });
     console.log(`Created cache directory: ${options.cache}`);
 }
+
+const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const server = http.createServer((req, res) => {
     res.writeHead(200, { "Content-Type": "text/plain" });
