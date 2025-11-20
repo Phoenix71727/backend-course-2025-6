@@ -32,17 +32,6 @@ function getPhotoPath(id) {
     return path.join(options.cache, `${id}.jpg`);
 }
 
-
-app.get("/RegisterForm.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "RegisterForm.html"));
-});
-
-
-app.get("/SearchForm.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "SearchForm.html"));
-});
-
-
 app.post("/register", upload.single("photo"), (req, res) => {
     const { inventory_name, description } = req.body;
 
@@ -149,6 +138,31 @@ app.delete("/inventory/:id", (req, res) => {
     res.json({ message: "Deleted" });
 });
 
+app.get("/RegisterForm.html", (req, res) => {
+    res.sendFile(path.join(__dirname, "RegisterForm.html"));
+});
+
+
+app.get("/SearchForm.html", (req, res) => {
+    res.sendFile(path.join(__dirname, "SearchForm.html"));
+});
+
+app.post("/search", (req, res) => {
+    const { id, includePhoto } = req.body;
+
+    const file = getItemPath(id);
+    if (!fs.existsSync(file)) {
+        return res.status(404).send("Not found");
+    }
+
+    let data = JSON.parse(fs.readFileSync(file));
+
+    if (includePhoto) {
+        data.photo_url = `/inventory/${id}/photo`;
+    }
+
+    res.json(data);
+});
 
 
 
