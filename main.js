@@ -160,11 +160,28 @@ app.post("/search", (req, res) => {
     if (includePhoto) {
         data.photo_url = `/inventory/${id}/photo`;
     }
+    res.json(data);
+    console.log(req.body);
+});
+
+app.get("/search", (req, res) => {
+    const { id, includePhoto } = req.query;
+
+    const file = getItemPath(id);
+    if (!fs.existsSync(file)) {
+        return res.status(404).send("Not found");
+    }
+
+    let data = JSON.parse(fs.readFileSync(file));
+
+    if (includePhoto === "true") {
+        data.photo_url = `/inventory/${id}/photo`;
+    }
 
     res.json(data);
 });
 
-app.all("*", (req, res) => {
+app.use((req, res) => {
     res.status(405).send("Method Not Allowed");
 });
 
