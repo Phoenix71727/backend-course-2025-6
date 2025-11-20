@@ -164,11 +164,9 @@ app.post("/search", (req, res) => {
     res.json(data);
 });
 
-
-
-
-
-
+app.all("*", (req, res) => {
+    res.status(405).send("Method Not Allowed");
+});
 
 const server = http.createServer(app);
 
