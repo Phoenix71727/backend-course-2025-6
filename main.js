@@ -89,6 +89,23 @@ app.get("/inventory/:id", (req, res) => {
     res.json(data);
 });
 
+app.put("/inventory/:id", (req, res) => {
+    const file = getItemPath(req.params.id);
+
+    if (!fs.existsSync(file)) {
+        return res.status(404).send("Not found");
+    }
+
+    let data = JSON.parse(fs.readFileSync(file));
+    const { inventory_name, description } = req.body;
+
+    if (inventory_name) data.inventory_name = inventory_name;
+    if (description) data.description = description;
+
+    fs.writeFileSync(file, JSON.stringify(data, null, 2));
+
+    res.json({ message: "Updated" });
+});
 
 
 
