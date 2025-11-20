@@ -78,6 +78,26 @@ app.get("/inventory", (req, res) => {
     res.json(items);
 });
 
+app.get("/inventory/:id", (req, res) => {
+    const file = getItemPath(req.params.id);
+
+    if (!fs.existsSync(file)) {
+        return res.status(404).send("Not found");
+    }
+
+    const data = JSON.parse(fs.readFileSync(file));
+    res.json(data);
+});
+
+
+
+
+
+
+
+
+
+
 const server = http.createServer(app);
 
 server.listen(options.port, options.host, () => {
