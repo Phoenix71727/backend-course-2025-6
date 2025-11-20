@@ -118,6 +118,22 @@ app.get("/inventory/:id/photo", (req, res) => {
     fs.createReadStream(file).pipe(res);
 });
 
+app.put("/inventory/:id/photo", upload.single("photo"), (req, res) => {
+    const id = req.params.id;
+
+    if (!fs.existsSync(getItemPath(id))) {
+        return res.status(404).send("Not found");
+    }
+
+    if (!req.file) {
+        return res.status(400).send("No photo uploaded");
+    }
+
+    fs.renameSync(req.file.path, getPhotoPath(id));
+
+    res.json({ message: "Photo updated" });
+});
+
 
 
 
