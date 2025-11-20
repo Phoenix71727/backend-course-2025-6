@@ -32,10 +32,53 @@ function getPhotoPath(id) {
     return path.join(options.cache, `${id}.jpg`);
 }
 
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("Webservice running\n");
+
+app.get("/RegisterForm.html", (req, res) => {
+    res.sendFile(path.join(__dirname, "RegisterForm.html"));
 });
+
+
+app.get("/SearchForm.html", (req, res) => {
+    res.sendFile(path.join(__dirname, "SearchForm.html"));
+});
+
+
+app.post("/register", upload.single("photo"), (req, res) => {
+    const { inventory_name, description } = req.body;
+
+    if (!inventory_name) {
+        return res.status(400).json({ error: "Name is required" });
+    }
+
+    const id = Date.now().toString();
+    const item = {
+        id,
+        inventory_name,
+        description: description || "",
+        photo: `/inventory/${id}/photo`
+    };
+
+    fs.writeFileSync(getItemPath(id), JSON.stringify(item, null, 2));
+
+    if (req.file) {
+        fs.renameSync(req.file.path, getPhotoPath(id));
+    }
+
+    res.status(201).json({ message: "Created", id });
+});
+
+app.get("/inventory", (req, res) => {
+    const files = fs.readdirSync(options.cache)
+        .filter(f => f.endsWith(".json"));
+
+    const items = files.map(f => {
+        return JSON.parse(fs.readFileSync(path.join(options.cache, f)));
+    });
+
+    res.json(items);
+});
+
+const server = http.createServer(app);
 
 server.listen(options.port, options.host, () => {
     console.log(`Server running at http://${options.host}:${options.port}/`);
