@@ -134,6 +134,21 @@ app.put("/inventory/:id/photo", upload.single("photo"), (req, res) => {
     res.json({ message: "Photo updated" });
 });
 
+app.delete("/inventory/:id", (req, res) => {
+    const id = req.params.id;
+    const json = getItemPath(id);
+    const photo = getPhotoPath(id);
+
+    if (!fs.existsSync(json)) {
+        return res.status(404).send("Not found");
+    }
+
+    fs.unlinkSync(json);
+    if (fs.existsSync(photo)) fs.unlinkSync(photo);
+
+    res.json({ message: "Deleted" });
+});
+
 
 
 
