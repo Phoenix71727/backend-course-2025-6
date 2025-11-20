@@ -22,6 +22,16 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const upload = multer({ dest: options.cache });
+
+function getItemPath(id) {
+    return path.join(options.cache, `${id}.json`);
+}
+
+function getPhotoPath(id) {
+    return path.join(options.cache, `${id}.jpg`);
+}
+
 const server = http.createServer((req, res) => {
     res.writeHead(200, { "Content-Type": "text/plain" });
     res.end("Webservice running\n");
